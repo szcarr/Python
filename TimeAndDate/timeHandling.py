@@ -74,63 +74,55 @@ def getYearMonthDay(date):
     return dateList
 
 def checkIfTimeRightNowHasPassedArgumentTime(dateAndTime, dateAndTimeCompared):
-
     '''
     dateAndTime parameter should be 'YYYY-MM-DD HH:MM:SS'.\n
-    Compares if the date and time passed as an argument is in the past.\n 
-    Remember, function uses UTC time!
-    If true:
-    returns true.
-    \n
-    Else:
+    dateAndTimeCompared parameter should be 'YYYY-MM-DD HH:MM:SS'.\n
+    Compares if dateAndTime is in the past compared to dateAndTimeCompared.\n 
+    If dateAndTime is in the past relative to dateAndTimeCompared:
     returns false.
     \n
-    Parameters:\n
-    dateCompared should be passed in the format YYYY-MM-DD. 
-    dateCompared should be a string. 
+    Else:
+    returns true.
     \n
-    timeCompared should be passed in the format HH:MM:SS. 
-    timeCompared should be a string.
     '''
 
-    dateList = str(dateAndTime).split(" ")
+    dateList = str(dateAndTime).split(" ") # GETS DATE AND TIME SEPARETELY
     date = dateList[0]
     time = dateList[1]
+    date = getYearMonthDay(date)
+    time = getHoursMinutesSeconds(time)
 
-    dateCompared = getYearMonthDay(date)
-    timeCompared = getHoursMinutesSeconds(time)
-
-    dateList = str(dateAndTime).split(" ")
-    date = dateList[0]
-    time = dateList[1]
-
-    timeNow = getHoursMinutesSeconds(date)
-    dateNow = getYearMonthDay(time)
+    dateListCompared = str(dateAndTimeCompared).split(" ")
+    print(dateListCompared)
+    dateCompared = dateListCompared[0]
+    timeCompared = dateListCompared[1]
+    timeCompared = getHoursMinutesSeconds(timeCompared)
+    dateCompared = getYearMonthDay(dateCompared)
 
     #Checking if year month or day is
     #print(dateCompared[0], dateNow[0])
-    if dateCompared[0] < dateNow[0]:
+    if date[0] < dateCompared[0]:
         return True
 
     #print(dateCompared[1], dateNow[1])
-    if dateCompared[0] <= dateNow[0] and dateCompared[1] < dateNow[1]:
+    if date[0] <= dateCompared[0] and date[1] < dateCompared[1]:
         return True
 
     #print(dateCompared[2], dateNow[2])
-    if dateCompared[0] <= dateNow[0] and dateCompared[1] <= dateNow[1] and dateCompared[2] < dateNow[2]:
+    if date[0] <= dateCompared[0] and date[1] <= dateCompared[1] and date[2] < dateCompared[2]:
         return True
 
     #Checking time
     #print(timeCompared[0], timeNow[0])
-    if dateCompared[0] <= dateNow[0] and dateCompared[1] <= dateNow[1] and dateCompared[2] <= dateNow[2] and timeCompared[0] < timeNow[0]:
+    if date[0] <= dateCompared[0] and date[1] <= dateCompared[1] and date[2] <= dateCompared[2] and time[0] < timeCompared[0]:
         return True
     
     #print(timeCompared[1], timeNow[1])
-    if dateCompared[0] <= dateNow[0] and dateCompared[1] <= dateNow[1] and dateCompared[2] <= dateNow[2] and timeCompared[0] <= timeNow[0] and timeCompared[1] < timeNow[1]:
+    if date[0] <= dateCompared[0] and date[1] <= dateCompared[1] and date[2] <= dateCompared[2] and time[0] <= timeCompared[0] and time[1] < timeCompared[1]:
         return True
 
     #print(timeCompared[2], timeNow[2])
-    if dateCompared[0] <= dateNow[0] and dateCompared[1] <= dateNow[1] and dateCompared[2] <= dateNow[2] and timeCompared[0] <= timeNow[0] and timeCompared[1] <= timeNow[1] and timeCompared[2] < timeNow[2]:
+    if date[0] <= dateCompared[0] and date[1] <= dateCompared[1] and date[2] <= dateCompared[2] and time[0] <= timeCompared[0] and time[1] <= timeCompared[1] and time[2] < timeCompared[2]:
         return True
 
     return False
@@ -240,7 +232,7 @@ def formatTimeToWithinBounds(dateAndTime):
             while dateAndTime[i] > maxBound[i]:
                 if dateAndTime[i] > maxBound[i]:
                     dateAndTime[i] = dateAndTime[i] - maxBound[i]
-                    dateAndTime[i - 1] = dateAndTime[i - 1] + 1
+                    dateAndTime[i - 1] = dateAndTime[i - 1] + dateAndTime
         except Exception as e:
             print(e)
 
@@ -264,57 +256,15 @@ def formatTimeToWithinBounds(dateAndTime):
     return date + " " + time
 
 def timeTillDatePLACEHIDELR(dateAndTime, dateAndTimeCompared):
-    #PLACEHILDERRR
-    '''
-    Args passed should be in the format 'YYYY-MM-DD HH:MM:SS'.\n
-    Args should be a string.\n
-    '''
-
-    dateAndTime = formatTimeToWithinBounds(dateAndTime)
-    dateAndTimeCompared = formatTimeToWithinBounds(dateAndTimeCompared)
-
-    #print(dateAndTime)
-    #print(dateAndTimeCompared)
-
-    splitList = str(dateAndTime).split(" ")
-    yearMonthDay = getYearMonthDay(splitList[0])
-    hoursMinutesSeconds = getHoursMinutesSeconds(splitList[1])
-
-    print(yearMonthDay, hoursMinutesSeconds)
-
-    splitList = str(dateAndTimeCompared).split(" ")
-    yearMonthDayCompared = getYearMonthDay(splitList[0])
-    hoursMinutesSecondsCompared = getHoursMinutesSeconds(splitList[1])
-
-    print(yearMonthDayCompared, hoursMinutesSecondsCompared)
-
-    maxBound = [9999, 12, monthrange(yearMonthDay[0], yearMonthDay[1])[1], 24, 60, 60]
-
-    diffTimeList = []
-    for i in range(len(yearMonthDay)):
-        output = yearMonthDay[i] - yearMonthDayCompared[i]
-        try:
-            while output < 0:
-                yearMonthDay[i - 1] = yearMonthDay[i - 1] - 1
-                output = output  + maxBound[i]
-        except:
-            pass
-        diffTimeList.append(output)
-
-    for i in range(len(yearMonthDay)):
-        #output = hoursMinutesSeconds[i] - hoursMinutesSecondsCompared[i]yearMonthDay
-        diffTimeList.append(output)
-
-    print(diffTimeList)
-
-def timeTillDate(dateAndTime, dateAndTimeCompared):
 
     '''
     Args passed should be in the format 'YYYY-MM-DD HH:MM:SS'.\n
     Args should be a string.\n
     '''
 
-    checkIfTimeRightNowHasPassedArgumentTime(dateAndTime,)
+    isDateAndTimeInThePast = checkIfTimeRightNowHasPassedArgumentTime(dateAndTime, dateAndTimeCompared)
+    if isDateAndTimeInThePast:
+        pass
 
     dateAndTime = formatTimeToWithinBounds(dateAndTime)
     dateAndTimeCompared = formatTimeToWithinBounds(dateAndTimeCompared)
@@ -350,7 +300,7 @@ def timeTillDate(dateAndTime, dateAndTimeCompared):
                 print("LAANA PAA INDX", i)
                 #print(dateAndTime[i - 1])
                 if dateAndTime[i - 1] <= 0: #DOESNT HAVE ANYTHING TO LOAN THEN IS NEGATIVE
-                    output = output - maxBound[i]
+                    output = output - 1
                     exit = True
                 else: #IS POSITIVE
                     output = output + maxBound[i]
@@ -361,21 +311,84 @@ def timeTillDate(dateAndTime, dateAndTimeCompared):
         print(output)
         diffTimeList[i] = output
 
+
+    date = [diffTimeList[0], diffTimeList[1], diffTimeList[2]]
+    time = [diffTimeList[3], diffTimeList[4], diffTimeList[5]]
+    print(date,)
+    return convertListToFormattedTime(date = date, time = time)
+
+def timeTillDate(dateAndTime, dateAndTimeCompared):
+
+    '''
+    Args passed should be in the format 'YYYY-MM-DD HH:MM:SS'.\n
+    Args should be a string.\n
+    '''
+
+    isDateAndTimeInThePast = checkIfTimeRightNowHasPassedArgumentTime(dateAndTime, dateAndTimeCompared)
+    if isDateAndTimeInThePast:
+        pass
+
+    dateAndTime = formatTimeToWithinBounds(dateAndTime)
+    dateAndTimeCompared = formatTimeToWithinBounds(dateAndTimeCompared)
+
+    #print(dateAndTime)
+    #print(dateAndTimeCompared)
+
+    splitList = str(dateAndTime).split(" ")
+    yearMonthDay = getYearMonthDay(splitList[0])
+    hoursMinutesSeconds = getHoursMinutesSeconds(splitList[1])
+
+    splitList = str(dateAndTimeCompared).split(" ")
+    yearMonthDayCompared = getYearMonthDay(splitList[0])
+    hoursMinutesSecondsCompared = getHoursMinutesSeconds(splitList[1])
+
+    maxBound = [9999, 12, monthrange(yearMonthDay[0], yearMonthDay[1])[1], 24, 60, 60]
+    
+    dateAndTime = [yearMonthDay[0], yearMonthDay[1], yearMonthDay[2], hoursMinutesSeconds[0], hoursMinutesSeconds[1], hoursMinutesSeconds[2]]
+    dateAndTimeCompared = [yearMonthDayCompared[0], yearMonthDayCompared[1], yearMonthDayCompared[2], hoursMinutesSecondsCompared[0], hoursMinutesSecondsCompared[1], hoursMinutesSecondsCompared[2]]
+
+    #print(dateAndTime)
+    #print(dateAndTimeCompared)
+
+    diffTimeList = [0, 0, 0, 0, 0, 0]
+
+    print(isDateAndTimeInThePast)
+    for i in range(len(dateAndTime) -1, -1, -1):
+        output = dateAndTime[i] - dateAndTimeCompared[i]
+        diffTimeList[i] = output
+
+    if isDateAndTimeInThePast:
+        for i in range(len(diffTimeList)):
+            try:
+                print(diffTimeList[i], diffTimeList[i - 1])
+                print(i, i -1)
+                while diffTimeList[i] > 0 and diffTimeList[i - 1] < 0:
+                    #print("hei")
+                    diffTimeList[i] = diffTimeList[i] - maxBound[i]
+                    diffTimeList[i - 1] = diffTimeList[i - 1] + 1
+            except:
+                pass
+
     date = [diffTimeList[0], diffTimeList[1], diffTimeList[2]]
     time = [diffTimeList[3], diffTimeList[4], diffTimeList[5]]
 
     return convertListToFormattedTime(date = date, time = time)
 
-VINTERFERIE = "2022-02-18 14:15:00"
+VINTERFERIE = "2022-02-7 11:16:00"
 
+he = timeTillDate(VINTERFERIE, "2022-02-7 10:15:00")
+print(he)
+
+
+#print(5242.7 % 3600)
 #POSITIVE TIME
 #timeTillDate(VINTERFERIE, "2022-02-7 10:15:01") # 0 year 0 months 11 days 3 hours 59 minutes 59 seconds !EXPECTED
 #timeTillDate(VINTERFERIE, "2022-02-17 14:15:01") # 0 year 0 months 0 days 23 hours 59 minutes 59 seconds !EXPECTED
 #timeTillDate(VINTERFERIE, "2021-05-7 10:15:01") # 0 year 9 months 11 days 3 hours 59 minutes 59 seconds !EXPECTED
 
 #NEGATIVE TIME
-hei = timeTillDate(VINTERFERIE, "2022-02-19 14:15:00") # 0 year 0 months 11 days 4 hours 0 minutes 59 seconds !EXPECTED
-print(hei)
+#hei = timeTillDate(VINTERFERIE, "2022-02-19 14:15:00") # 0 year 0 months 11 days 4 hours 0 minutes 59 seconds !EXPECTED
+#print(hei)
 #while True:
     #timeTillDate(VINTERFERIE, getUTCdateandtime())
     #time.sleep(1)
