@@ -35,5 +35,3 @@ def generateRandomString(**kwargs):
             results = results + symbols[n]
 
     return results
-
-print(generateRandomString(length = 16))
