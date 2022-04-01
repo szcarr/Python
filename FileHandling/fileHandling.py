@@ -2,7 +2,6 @@ import os
 import platform
 
 
-
 '''
 -------------------------------------------------------PROGRAMS-------------------------------------------------------
 '''
@@ -29,9 +28,11 @@ def detectOS():
 '''
 
 def checkIfFileExist(filePathAndName):
+
     '''
     Returns True if filename and file extension exists
     '''
+
     if os.path.isfile(filePathAndName):
         #File exist
         return True
@@ -39,13 +40,28 @@ def checkIfFileExist(filePathAndName):
         #File does not exist
         return False
 
-def getPathToCurrentDir():
+def getPathToCurrentDir(*nameOfProjectFolder):
     
     '''
+    Function can be passed without arg but will be innacurate\n
+    nameOfProjectFolder is folder name before src\n
+
+    Pass arg for more accuracy
+
+    Example:
+    /home/scp092/<ProjectFolderName>/src/
+
     Returns a string with the filepath to the directory the file was called from. \n
 
     Return example: /home/user/Documents/Program/Mr.Mine/src/
     '''
+
+    projectFolder = None
+    if nameOfProjectFolder:
+        projectFolder = nameOfProjectFolder[0]
+
+
+    #projectFolder
 
     pathInList = os.path.abspath(".")
 
@@ -62,6 +78,15 @@ def getPathToCurrentDir():
     splitBy = detectOS()
 
     actualPath = ""
+    for i in range(len(listWithPossiblePlaces)):
+        if projectFolder != None and projectFolder in listWithPossiblePlaces[i]:
+            stringConstruction = listWithPossiblePlaces[i].split(splitBy)
+            for i in range(len(stringConstruction)):
+                if stringConstruction[i] == fileToFind:
+                    break
+                actualPath = actualPath + stringConstruction[i] + splitBy
+            return actualPath
+
     for i in range(len(listWithPossiblePlaces)):
         pathSplitted = listWithPossiblePlaces[i].split(splitBy)
         if pathSplitted[len(pathSplitted) - 1] == fileToFind and pathSplitted[len(pathSplitted) - 2] == nameOfParentFolder:
@@ -108,13 +133,14 @@ def removeFile(filePathAndName):
 def readTXTFile(filePathAndName):
 
     '''
-    Parameter should be filepath + filename + file extension
-    Reads a txt file at specified location
+    Parameter should be filepath + filename and extension.\n
+    Reads a txt file at specified location.\n
+    \n
+    Returns a list with contents of file in type str.\n
     '''
 
-    fileLine = open(filePathAndName)
-    fileLines = fileLine.readlines()
-    fileLine.close()
+    with open(filePathAndName) as file:
+        fileLines = file.readlines()
     return fileLines
 
 def createFileInSpecifiedDir(filePathAndName):
@@ -166,24 +192,51 @@ def getLineNumberFromFile(filePathAndName, stringToSearchFor):
     
     return lineNumberList
 
+def getSingleLineFromFile(filePathAndName, lineIndex):
+    pass
+
 def replaceLineInFile(filePathAndName, lineNumber, lineToAdd):
 
     '''
-    Deletes old file and creates a new file with the wanted changes
-    Remember that file has start index 0
+    Deletes old file and creates a new file with the wanted changes.\n
+    Remember that file has start index 0.\n
+    Adds a breakline after lineToAdd.
     '''
 
     document = readTXTFile(filePathAndName)
     lineToAdd = lineToAdd + "\n"
-    print(lineToAdd)
-    for i in range(len(lineNumber)):
-        document[lineNumber[i]] = lineToAdd
+    for i in range(lineNumber):
+        document[lineNumber] = lineToAdd
     
     removeFile(filePathAndName)
     createFileInSpecifiedDir(filePathAndName)
     for i in range(len(document)):
         addTextToSpecifiedFile(filePathAndName, document[i])
 
+def stringInFileExists(filePathAndName, stringToSearchFor):
+
+    '''
+    Returns true if stringToSearchFor exists the given file.\n
+    Removes linebreak so stringToSearchFor should not contain linebreak.
+    '''
+
+    file = readTXTFile(filePathAndName)
+
+    fileOutput = []
+
+    for line in file:
+        fileOutput.append(line.split("\n"))
+
+    stringExist = False
+
+    for outputString in fileOutput:
+        if outputString[0] == stringToSearchFor:
+            stringExist = True
+
+    return stringExist
+
 #replaceLineInFile("/home/scp092/Documents/Program/Mr.Mine/src/test.txt", getLineNumberFromFile("/home/scp092/Documents/Program/Mr.Mine/src/test.txt", "hola bro"), "inserta verdi")
 #hei = getLineNumberFromFile("/home/scp092/Documents/Program/Mr.Mine/src/cfg/gamestage/gamestage.txt", "startCraftingFromRedGems = True;")
 #print(hei)
+#print(stringInFileExists(positions.userconfigFile, "hasInstalledModules = False;"))
+#print(getPathToCurrentDir("TextUI"))
