@@ -16,7 +16,7 @@ def main(**kwargs):
     Heigt = <Integer>  # Sets the height of the game
     Deadtile = <String> # Sets deadtiles as any char or string
     Alivetile = <String> # Sets alivetile as any char or string
-    Update = <Integer> # Sets time before game goes to next frame
+    Update = <Integer> # Sets time before "game" updates to next frame
     Verbose = <Boolean> # Toggles more info
     '''
 
