@@ -1,8 +1,10 @@
 import os
 import random
 import time
+import copy
 
 coordinates = {}
+buffer = {}
 
 def main(**kwargs):
 
@@ -59,14 +61,17 @@ def main(**kwargs):
     counter = 0
 
     while True:
-        print(f"alive {getAliveTiles()}")
-        displayGame(counter)
         determineValue()
-        print(f"alive {getAliveTiles()}")
         #os.system("cls")
         displayGame(counter)
+        global coordinates
+        coordinates = copy.deepcopy(buffer)
         time.sleep(update)
         counter += 1
+
+
+
+
 
 def setup():
     for y in range(height):
@@ -117,22 +122,24 @@ def getXYValueToInt(coords):
     return x, y
 
 def determineValue():
+    global buffer
+    buffer = copy.deepcopy(coordinates)
     for y in range(height):
         for x in range(width):
             xy = str(x) + " " + str(y)
-            aliveNeighbors, deadNeighbors = getNeighborsOf(xy)[0], getNeighborsOf(xy)[1]
+            aliveNeighbors, deadNeighbors = getNeighborsOff(xy)[0], getNeighborsOff(xy)[1]
             if coordinates.get(xy) == alivetile:
                 if aliveNeighbors < 2:
-                    coordinates[xy] = deadtile
+                    buffer[xy] = deadtile
                 elif aliveNeighbors == 2 or aliveNeighbors == 3:
-                    coordinates[xy] = alivetile
+                    buffer[xy] = alivetile
                 elif aliveNeighbors > 3:
-                   coordinates[xy] = deadtile 
+                   buffer[xy] = deadtile 
             else:
                 if aliveNeighbors == 3:
-                    coordinates[xy] = alivetile
+                    buffer[xy] = alivetile
 
-def getNeighborsOf(coords):
+def getNeighborsOff(coords):
     
     offset = [
         "-1 -1", "0 -1", "1 -1",
@@ -158,7 +165,8 @@ def displayGame(counter):
     for y in range(height):
         for x in range(width):
             xy = str(x) + " " + str(y)
-            print(coordinates.get(xy), end=" ")
+            print(buffer.get(xy), end=" ")
+            #print(nextframe)
         print("")
     if verbose:
         print("\n")
@@ -177,9 +185,9 @@ def displayGame(counter):
 height = 37
 width = 79
 deadtile = " "
-alivetile = "|"
-update = 0.05
-minimum = height * width / 100 * 6
-maximum = height * width / 100 * 10
+alivetile = "*"
+update = 0.00
+minimum = height * width / 100 * 20
+maximum = height * width / 100 * 30
 
 main(height=height, width=width, deadtile=deadtile, alivetile=alivetile, update=update, minimum=minimum, maximum=maximum)
