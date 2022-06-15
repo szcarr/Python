@@ -1,136 +1,18 @@
 import os
-import platform
 
+def get_path_to_current_dir(path) -> str:
+    return f"{os.path.dirname(os.path.abspath(path))}{os.sep}"
 
-'''
--------------------------------------------------------PROGRAMS-------------------------------------------------------
-'''
-
-#def archiveTXTfilesInknownIPs():
-
-#def deleteTXTfilesInknownIPs():
-
-def detectOS():
-    #os detection
-    splitBy = "\\"
-    if str(platform.system()) == "Linux":
-        splitBy = '/'
-    elif str(platform.system()) == "Windows":
-        splitBy = '\\'
-    elif str(platform.system()) == "Darwin":
-        #Darwin is macOS
-        #I dont know what it's files is separeted by
-        splitBy = '/'
-    return splitBy
-
-'''
--------------------------------------------------------FILES-------------------------------------------------------
-'''
-
-def checkIfFileExist(filePathAndName):
-
-    '''
-    Returns True if filename and file extension exists
-    '''
-
-    if os.path.isfile(filePathAndName):
-        #File exist
-        return True
-    else:
-        #File does not exist
-        return False
-
-def getPathToCurrentDir(*nameOfProjectFolder):
-    
-    '''
-    Function can be passed without arg but will be innacurate\n
-    nameOfProjectFolder is folder name before src\n
-
-    Pass arg for more accuracy
-
-    Example:
-    /home/scp092/<ProjectFolderName>/src/
-
-    Returns a string with the filepath to the directory the file was called from. \n
-
-    Return example: /home/user/Documents/Program/Mr.Mine/src/
-    '''
-
-    projectFolder = None
-    if nameOfProjectFolder:
-        projectFolder = nameOfProjectFolder[0]
-
-
-    #projectFolder
-
-    pathInList = os.path.abspath(".")
-
-    listWithPossiblePlaces = []
-    fileToFind = os.path.basename(__file__)
-    nameOfParentFolder = "src"
-
-    for r,d,f in os.walk(pathInList): 
-        #Gets all the places where the about.txt file could be located
-        for files in f:
-            if files == fileToFind:
-                listWithPossiblePlaces.append(str(os.path.join(r,files)))
-
-    splitBy = detectOS()
-
-    actualPath = ""
-    for i in range(len(listWithPossiblePlaces)):
-        if projectFolder != None and projectFolder in listWithPossiblePlaces[i]:
-            stringConstruction = listWithPossiblePlaces[i].split(splitBy)
-            for i in range(len(stringConstruction)):
-                if stringConstruction[i] == fileToFind:
-                    break
-                actualPath = actualPath + stringConstruction[i] + splitBy
-            return actualPath
-
-    for i in range(len(listWithPossiblePlaces)):
-        pathSplitted = listWithPossiblePlaces[i].split(splitBy)
-        if pathSplitted[len(pathSplitted) - 1] == fileToFind and pathSplitted[len(pathSplitted) - 2] == nameOfParentFolder:
-            stringConstruction = listWithPossiblePlaces[i].split(splitBy)
-            for i in range(len(stringConstruction)):
-                if stringConstruction[i] == fileToFind:
-                    break
-                actualPath = actualPath + stringConstruction[i] + splitBy
-
-    return actualPath
-
-def getAmountOfLinesInFile(filePathAndName):
-    #nameOfFile needs to include the file extension and needs the entire path to the file
-    #Example of string that can be passed as an argument
-    #/home/scp092/Documents/Program/SSHBruteforce/src/usernames.txt
-
-    file = open(filePathAndName, "r")
+def get_amount_of_lines_in_file(filepath):
     line_count = 0
 
-    for line in file:
-        if line != "\n":
+    with open(filepath, "r") as file:
+        for _ in file:
             line_count += 1
-    file.close()
 
     return line_count
 
-def makeDirectory(pathAndFolderName):
-    if not checkIfFileExist(pathAndFolderName):
-        #If true folder does not exist
-        os.mkdir(pathAndFolderName)
-    else:
-        print("Folder already exists or error.")
-    
-def removeFile(filePathAndName):
-    if os.path.exists(filePathAndName):
-        os.remove(filePathAndName)
-    else:
-        print("Error: file: '" + filePathAndName + "' does not exist.")
-
-'''
--------------------------------------------------------TXT HANDLING-------------------------------------------------------
-'''
-
-def readTXTFile(filePathAndName):
+def read_file(filepath):
 
     '''
     Parameter should be filepath + filename and extension.\n
@@ -139,48 +21,31 @@ def readTXTFile(filePathAndName):
     Returns a list with contents of file in type str.\n
     '''
 
-    with open(filePathAndName) as file:
+    with open(filepath) as file:
         fileLines = file.readlines()
     return fileLines
 
-def createFileInSpecifiedDir(filePathAndName):
-
-    '''
-    Creates a file in the specified directory
-    Parameter should be filepath + name of file and file extension
-    '''
-
-    if not os.path.isfile(filePathAndName):
-        #File does not exist, then creates the file
-        f = open(filePathAndName, "x")
-    else:    
-        return -1
-        #Else file already exists
-
-def addTextToSpecifiedFile(filePathAndName, lineToAdd):
+def add_text_to_file(filepath, lineToAdd):
     
     '''
     Adds text to the specified file
     Does not add a linebreak to parameter string "lineToAdd"
     '''
 
-    if os.path.isfile(filePathAndName):
-        file_object = open(filePathAndName, 'a')
-        # Append 'hello' at the end of file
-        file_object.write(lineToAdd)
-        # Close the file
-        file_object.close()
+    if os.path.isfile(filepath):
+        with open(filepath, 'a') as file:
+            file.write(lineToAdd)
     else:
-        print("Could not write to specified file.")
+        raise Exception("Failed to write to the file.")
 
-def getLineNumberFromFile(filePathAndName, stringToSearchFor):
+def get_line_number_from_file(filepath, stringToSearchFor):
 
     '''
     Returns a list with all the places lineToSearchFor was equal to the index of the file
     Returns a list with integers
     '''
 
-    file = readTXTFile(filePathAndName)
+    file = read_file(filepath)
     splitList = []
     for line in file:
         splitList.append((line.split("\n"))[0])
@@ -192,10 +57,7 @@ def getLineNumberFromFile(filePathAndName, stringToSearchFor):
     
     return lineNumberList
 
-def getSingleLineFromFile(filePathAndName, lineIndex):
-    pass
-
-def replaceLineInFile(filePathAndName, lineNumber, lineToAdd):
+def replace_line_in_file(filepath, lineNumber, lineToAdd):
 
     '''
     Deletes old file and creates a new file with the wanted changes.\n
@@ -203,24 +65,26 @@ def replaceLineInFile(filePathAndName, lineNumber, lineToAdd):
     Adds a breakline after lineToAdd.
     '''
 
-    document = readTXTFile(filePathAndName)
+    document = read_file(filepath)
     lineToAdd = lineToAdd + "\n"
+    
     for i in range(lineNumber):
         document[lineNumber] = lineToAdd
     
-    removeFile(filePathAndName)
-    createFileInSpecifiedDir(filePathAndName)
-    for i in range(len(document)):
-        addTextToSpecifiedFile(filePathAndName, document[i])
+    os.remove(filepath)
+    open(filepath, "x")
 
-def stringInFileExists(filePathAndName, stringToSearchFor):
+    for i in range(len(document)):
+        add_text_to_file(filepath, document[i])
+
+def check_if_string_in_file_exists(filepath, stringToSearchFor):
 
     '''
     Returns true if stringToSearchFor exists the given file.\n
     Removes linebreak so stringToSearchFor should not contain linebreak.
     '''
 
-    file = readTXTFile(filePathAndName)
+    file = read_file(filepath)
 
     fileOutput = []
 
@@ -234,9 +98,3 @@ def stringInFileExists(filePathAndName, stringToSearchFor):
             stringExist = True
 
     return stringExist
-
-#replaceLineInFile("/home/scp092/Documents/Program/Mr.Mine/src/test.txt", getLineNumberFromFile("/home/scp092/Documents/Program/Mr.Mine/src/test.txt", "hola bro"), "inserta verdi")
-#hei = getLineNumberFromFile("/home/scp092/Documents/Program/Mr.Mine/src/cfg/gamestage/gamestage.txt", "startCraftingFromRedGems = True;")
-#print(hei)
-#print(stringInFileExists(positions.userconfigFile, "hasInstalledModules = False;"))
-#print(getPathToCurrentDir("TextUI"))
